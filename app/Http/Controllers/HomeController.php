@@ -1,6 +1,10 @@
 <?php
 
-use App\Http\Controllers\Controller;
+namespace App\Http\Controllers;
+
+use App\Models\Garbage;
+use App\Models\Municipality;
+use App\Notifications\NotifyCollector;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Notification;
@@ -40,5 +44,101 @@ class HomeController extends Controller
                 'Address must be at least 3 characters' => 'user_address.min',
             ]
         );
+
+        $data = $request->all();
+        $garbage = Garbage::create($data);
+        $user = [
+            'name' => $data['user_name'],
+            'phone' => $data['user_phone'],
+            'address' => $data['user_address'],
+            'remarks' => $data['remarks'] ?? null,
+        ];
+
+//        if ($request->hasfile('image')) {
+
+        $media=$garbage
+            ->addMediaFromRequest('image')
+            ->toMediaCollection('image');
+        $image = $media->getUrl();
+
+//        }
+
+        $this->handleLocation($data['latitude'], $data['longitude'], $user,$image);
+        return redirect()->back()->with('success', 'Your request has been submitted.');
+
+    }
+
+    public function getMap()
+    {
+        $garbages = Garbage::with('media') // Load media relation
+        ->get()
+            ->map(function ($garbage) {
+                return [
+                    'latitude' => $garbage->latitude,
+                    'longitude' => $garbage->longitude,
+                    'image' => $garbage->getFirstMediaUrl('image') ?? null, // Fetch the image URL
+                ];
+            });
+
+
+        return view('map', compact('garbages'));
+
+    }
+
+
+    public function handleLocation($latitude, $longitude, array $user,$image)
+    {
+
+        // Find the nearest municipality
+        $nearestMunicipality = $this->findNearestMunicipality($latitude, $longitude);
+
+        if ($nearestMunicipality) {
+            $email = $nearestMunicipality->email;
+            $this->notifyMunicipality($email, $latitude, $longitude, $user,$image);
+            return response()->json(['message' => "Notification sent to {$nearestMunicipality->name} Municipality"]);
+        } else {
+            return response()->json(['message' => 'No nearby municipality found']);
+        }
+    }
+
+    private function findNearestMunicipality($latitude, $longitude)
+    {
+        // Query municipalities and calculate distance
+        $municipalities = Municipality::all();
+
+        $nearest = null;
+        $minDistance = PHP_INT_MAX;
+
+        foreach ($municipalities as $municipality) {
+            $distance = $this->haversine($latitude, $longitude, $municipality->latitude, $municipality->longitude);
+            if ($distance < $minDistance) {
+                $minDistance = $distance;
+                $nearest = $municipality;
+            }
+        }
+
+        return $nearest;
+    }
+
+    private function haversine($lat1, $lon1, $lat2, $lon2)
+    {
+        $earthRadius = 6371; // Earth radius in km
+
+        $dLat = deg2rad($lat2 - $lat1);
+        $dLon = deg2rad($lon2 - $lon1);
+
+        $a = sin($dLat / 2) * sin($dLat / 2) +
+            cos(deg2rad($lat1)) * cos(deg2rad($lat2)) *
+            sin($dLon / 2) * sin($dLon / 2);
+
+        $c = 2 * atan2(sqrt($a), sqrt(1 - $a));
+
+        return $earthRadius * $c;
+    }
+
+    private function notifyMunicipality($email, $latitude, $longitude, $user,$image)
+    {
+        \Mail::to($email)->send(new \App\Mail\MunicipalityNotification($latitude, $longitude, $user,$image));
     }
 }
+

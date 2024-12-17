@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,3 +15,5 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/',[HomeController::class,'index']);
+Route::post('/garbage/store',[HomeController::class,'store'])->name('garbage.store');
+Route::get('/garbage/map',[HomeController::class,'getMap'])->name('garbage.map');
