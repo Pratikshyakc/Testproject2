@@ -32,7 +32,7 @@
     <div class="row">
         <div class="col-md-6 border-left">
             <header>
-                <img src="{{asset('images/logo.jpg')}}"  alt="fohor malai logo">
+                <img src="{{asset('images/logo.jpg')}}"  alt="fohor malai">
                 <h1>
                     FOHOR MALAI!
                 </h1>
