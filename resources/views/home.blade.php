@@ -32,7 +32,7 @@
     <div class="row">
         <div class="col-md-6 border-left">
             <header>
-                <img src="{{asset('images/logo.jpg')}}"  alt="fohor malai">
+                <img src="{{asset('image/logo.jpg')}}"  alt="fohor malai">
                 <h1>
                     FOHOR MALAI!
                 </h1>
@@ -42,13 +42,13 @@
 
             <div class="carousel">
                 <div class="carousel-images">
-                    <img class="image-carousel" src="{{asset('images/fohorphoto1.jpeg')}}" alt="Image 1" >
+                    <img class="image-carousel" src="{{asset('image/fohorphoto1.jpeg')}}" alt="Image 1" >
                 </div>
                 <div class="carousel-images">
-                    <img class="image-carousel" src="{{asset('images/fohorphoto2.jpeg')}}" alt="Image 2">
+                    <img class="image-carousel" src="{{asset('image/fohorphoto2.jpeg')}}" alt="Image 2">
                 </div>
                 <div class="carousel-images">
-                    <img class="image-carousel" src="{{asset('images/fohorphoto3.jpeg')}}" alt="Image 3">
+                    <img class="image-carousel" src="{{asset('image/fohorphoto3.jpeg')}}" alt="Image 3">
                 </div>
 
             </div>
