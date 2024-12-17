@@ -38,7 +38,7 @@
                 </h1>
 
             </header>
-            <p>Welcome to FohorMalai: You can pin and locate garbage, which will notify your nearest municipality office. Let’s keep our environment clean.</p>
+            <p>Welcome to FohorMalai:</p>You can pin and locate garbage, which will notify your nearest municipality office. Let’s keep our environment clean.</p>
 
             <div class="carousel">
                 <div class="carousel-images">
@@ -221,5 +221,3 @@
 </script>
 </body>
 </html>
-
-
